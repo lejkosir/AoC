@@ -1,5 +1,3 @@
-import random
-
 def remake(filename):
     with open(filename) as file:
         rules = {}
@@ -19,32 +17,57 @@ def remake(filename):
                 for x in line[:-1].split(","):
                     l.append(int(x))
                 prints.append(l)
-    print(rules)
     return rules, prints
 
 
 def first(filename):
     rules, prints = remake(filename)
-    prints2 = []
+    wrong_order = []
     summed = 0
     for pr in prints:
-
         printable = True
         for i, p in enumerate(pr):
             if p in rules and printable:
                 for rule in rules[p]:
                     if rule in pr[:i]:
                         printable = False
-                        prints2.append(pr)
+                        wrong_order.append(pr)
                         break
         if printable:
-            print("scoooooooooooooooooooore")
             summed += pr[int((len(pr) - 1) / 2)]
     print(summed)
-
-    return rules, prints2
-
+    return wrong_order
 
 
+def second(filename):
+    rules, prints = remake(filename)
+    wrong = first(filename)
+    summed = 0
+    for prin in wrong:
+        fixed = check(rules, prin)
+        summed +=  fixed[int((len(fixed) - 1) / 2)]
+    print(summed)
 
-first("files/5")
+# rekurzija 
+def check(rules, prin):
+    neu = prin.copy()
+    flag = True
+    for i, p in enumerate(prin):
+        f = -1
+        if p in rules:
+            for rule in rules[p]:
+                if rule in prin[:i]:
+                    flag = False
+                    f = prin[:i].index(rule)
+                    break
+            if f >= 0:
+                neu.remove(p)
+                neu.insert(f, p)
+                break
+    if flag:
+        return neu
+    else:
+        return check(rules, neu)
+
+
+second("files/5")
